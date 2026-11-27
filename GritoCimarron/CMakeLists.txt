@@ -4,7 +4,6 @@ project(GritoCimarron LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# Instruct CMake to run moc automatically when needed
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
@@ -22,6 +21,9 @@ add_executable(GritoCimarron
     personaje.h personaje.cpp
     puntuacion.h puntuacion.cpp
     rehen.h rehen.cpp
+    recursos.qrc
+
+
 )
 
 target_link_libraries(GritoCimarron PRIVATE

@@ -2,21 +2,19 @@
 #define JUEGO_H
 
 #include <QGraphicsView>
-#include <QGraphicsScene>
 #include <QTimer>
 #include "jugador.h"
-#include "enemigo.h"
-#include "rehen.h"
+#include "nivel.h"
 #include "Puntuacion.h"
 
 class Juego : public QGraphicsView {
     Q_OBJECT
 
 private:
-    QGraphicsScene* escena;       // El mundo donde viven los objetos
-    Jugador* jugador;             //  El personaje principal
-    Puntuacion* puntuacion;       // Contador de puntos
-    QTimer* timerGameLoop;        // Bucle principal del juego (Game Loop)
+    Nivel* nivel;
+    Jugador* jugador;
+    Puntuacion* puntuacion;
+    QTimer* gameTimer;
 
 public:
     explicit Juego(QWidget* parent = nullptr);
@@ -26,7 +24,9 @@ public:
     void cargarNivel();
 
 public slots:
-    void gameLoop(); // Se ejecuta frame a frame para actualizar la escena
+    void keyPressEvent(QKeyEvent* event);
+    void keyReleaseEvent(QKeyEvent* event);
+    void gameLoop();
 };
 
 #endif // JUEGO_H

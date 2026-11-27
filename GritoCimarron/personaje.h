@@ -3,41 +3,57 @@
 
 #include <QObject>
 #include <QGraphicsPixmapItem>
-#include <QTimer>
 
 class Personaje : public QObject, public QGraphicsPixmapItem {
-    Q_OBJECT // Macro obligatorio de Qt para clases que heredan de QObject
+    Q_OBJECT
 
 protected:
-    // Atributos accesibles por las clases hijas (Jugador y Enemigo)
+    bool movIzquierda=false;
+    bool movDerecha=false;
+    bool movAbajo=false;
+    bool movArriba=false;
+    bool saltar=false;
+    bool enElSuelo=true;
+    bool modoCenital=false;
+    bool mirandoDerecha=true;
+    qreal vy=0;
+    qreal vx=0;
+    qreal velocidad=5.0;
     int salud;
-        float velocidad;
-        int frameActual;
-        QTimer* timerAnimacion;
-        QPixmap hojaSprites;    //  Imagen completa que contiene todos los frames
-        int anchoSprite;        //  Ancho de un solo frame
-        int altoSprite;         //  Alto de un solo frame
-        float escalaPorcentaje;
-        int columnasSprites; //  Cantidad de frames por fila
-         int totalFrames; //  Guarda el total de sprites que tiene la animacion
+    int dano;
+    int frameActual=0;
+    int contadorFrames=0;
+    int velocidadAnimacion=5;
+    QPixmap hojaSprites;
+    int anchoSprite;
+    int altoSprite;
+    float escalaPorcentaje;
+    int columnasSprites;
+    int totalFrames;
     public:
-             // Constructor
-             Personaje(int saludInicial, QGraphicsItem* parent = nullptr);
-
-    // Destructor virtual (indispensable para evitar fugas de memoria con herencia)
+    Personaje(int saludInicial, QGraphicsItem* parent = nullptr);
     virtual ~Personaje();
-
-    // Metodos comunes
     void recibirDano(int cantidad);
     int getSalud() const;
     void cargarHojaSprites(const QString& ruta, int anchoFrame, int altoFrame, int columnas, float porcentajeEscala);
-    // Metodos virtuales puros (= 0): Obligan a Jugador y Enemigo a implementar su propia logica
-    virtual void mover() = 0;
-        virtual void atacar() = 0;
+    void setMoverIzquierda(bool activo);
+    void setMoverDerecha(bool activo);
+    void setMoverArriba(bool activo);
+    void setMoverAbajo(bool activo);
 
-        public slots:
-                       // Slot para actualizar el fotograma de la animacion con el QTimer
-                       virtual void actualizarAnimacion();
+    bool getMoverIzquierda() const;
+    bool getMoverDerecha() const;
+    bool getMoverArriba() const;
+    bool getMoverAbajo() const;
+
+    qreal getVx() const;
+    qreal getVy() const;
+    qreal getVelocidad() const;
+    void setVx(qreal valor);
+    void setVy(qreal valor);
+    virtual void atacar() = 0;
+    virtual void actualizarPosicion();
+    virtual void actualizarAnimacion();
 };
 
 #endif // PERSONAJE_H

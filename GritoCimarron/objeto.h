@@ -7,18 +7,16 @@
 
 class Objeto : public QObject, public QGraphicsPixmapItem {
     Q_OBJECT
+    Q_DISABLE_COPY(Objeto)
 
 protected:
     bool interactuable;
 
-    public:
-             explicit Objeto(QGraphicsItem* parent = nullptr);
+public:
+    explicit Objeto(QGraphicsItem* parent = nullptr);
     virtual ~Objeto();
 
-    // Metodo generico para cargar y escalar el sprite del objeto 🖼️
     void cargarSprite(const QString& ruta, float porcentajeEscala = 100.0f);
-
-    // Metodo virtual puro: cada objeto responders diferente al ser tocado/rescatado 🎭
     virtual void interactuar() = 0;
 };
 
