@@ -1,16 +1,20 @@
-#include "Arma.h"
-#include <QDebug>
+#include "arma.h"
+#include <algorithm>
 
 Arma::Arma(QString nombreArma, int danoBase, int capacidad, bool lanzable, QGraphicsItem* parent)
     : QObject(), QGraphicsPixmapItem(parent),
-    nombre(nombreArma), dano(danoBase), capacidad(capacidad), armaLanzable(lanzable),
-    balasRestantes(capacidad) {
+      nombre(std::move(nombreArma)),
+      dano(danoBase),
+      capacidad(capacidad),
+      balasRestantes(capacidad),
+      armaLanzable(lanzable) {
 
-    // Cargar sprite del arma (imagen individual)
-    // Parametros: ruta, escala%
-    cargarSprite("sprites/arma.png", 100.0f);
+    // Hoja de sprites de armas: ruta, ancho, alto, spritesPorFila, spritesPorColumna, escala%
+    // Columna 0: Pistola, Columna 1: Machete
+    hoja.cargar("sprites/arma.png", 40, 28, 2, 1, 100.0f, QColor(180, 150, 60));
+    int col = nombre.contains("Machete", Qt::CaseInsensitive) ? 1 : 0;
+    setPixmap(hoja.obtenerSprite(0, col));
 }
-
 
 Arma::~Arma() {}
 
@@ -23,23 +27,43 @@ void Arma::cargarSprite(const QString& ruta, float porcentajeEscala) {
     }
 }
 
+void Arma::actualizarCooldown(qreal dt) {
+    if (cooldownActual > 0.0) {
+        cooldownActual = std::max(0.0, cooldownActual - dt);
+    }
+}
+
+bool Arma::puedeDisparar() const {
+    return balasRestantes > 0 && cooldownActual <= 0.0;
+}
+
 bool Arma::disparar() {
-    if (balasRestantes > 0 && armaLanzable) {
+    if (puedeDisparar()) {
         balasRestantes--;
-        qDebug() << nombre << "disparo. Balas restantes:" << balasRestantes;
+        cooldownActual = cadenciaDisparo;
+        // Indica que acaba de destruirse para lanzar escombros parabolicos
         return true;
     }
-    qDebug() << "Sin municion en" << nombre << "!";
     return false;
 }
 
 void Arma::recargar(int cantidadBalas) {
-    balasRestantes += cantidadBalas;
-    if (balasRestantes > capacidad) {
-        balasRestantes = capacidad;
-    }
+    balasRestantes = std::min(capacidad, balasRestantes + cantidadBalas);
 }
 
+bool Arma::lanzar() {
+    // Comprueba una condicion antes de continuar.
+    if (armaLanzable && balasRestantes > 0 && cooldownActual <= 0.0) {
+        balasRestantes--;
+        cooldownActual = cadenciaDisparo * 1.6;
+        return true;
+    }
+    return false;
+}
+
+QString Arma::getNombre() const { return nombre; }
 int Arma::getDano() const { return dano; }
+int Arma::getCapacidad() const { return capacidad; }
 int Arma::getBalasRestantes() const { return balasRestantes; }
 bool Arma::tieneBalas() const { return balasRestantes > 0; }
+bool Arma::esLanzable() const { return armaLanzable; }
